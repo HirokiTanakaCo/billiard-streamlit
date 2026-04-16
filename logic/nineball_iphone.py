@@ -19,6 +19,18 @@ class MatchState:
     winner: str = ""
     finished: bool = False
 
+    def current_player(self):
+        return self.players[self.turn]
+
+    # 👇 メイン側で snapshot() なども呼んでいるので、空の関数を作っておくとエラーを防げます
+    def snapshot(self):
+        pass
+
+    def next_turn(self):
+        self.turn = (self.turn + 1) % len(self.players)
+
+    def undo(self):
+        pass
 
 def create_initial_state():
     """
