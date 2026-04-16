@@ -490,10 +490,12 @@ st.markdown(
     }}
 
     /* ヘッダー干渉対策 */
+    /*
     [data-testid="stHeader"] {{
         background: rgba(0,0,0,0) !important;
         height: 0px !important;
     }}
+    */
     </style>
 
     <div class="header-safe-wrapper">

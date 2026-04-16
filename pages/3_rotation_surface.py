@@ -693,10 +693,10 @@ hr.sep{
 
 /* expander 内部の不要な separator も除去 */
 #settings-scope hr,
-#settings-scope [role="separator"] {
+/* #settings-scope [role="separator"] {
   display: none !important;
 }
-
+*/
 </style>
 """, unsafe_allow_html=True)
 
@@ -997,10 +997,13 @@ st.markdown(
     }}
 
     /* ヘッダー干渉対策 */
+    /*
     [data-testid="stHeader"] {{
         background: rgba(0,0,0,0) !important;
         height: 0px !important;
     }}
+    */
+    
     </style>
 
     <div class="header-safe-wrapper">

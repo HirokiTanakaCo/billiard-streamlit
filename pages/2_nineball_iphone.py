@@ -129,7 +129,10 @@ div[data-testid="stVerticalBlock"] > div:has(button[key="main_plus_btn"]) button
     font-size: 18px !important; font-weight: 900 !important; height: 60px !important;
 }}
 
+/*
 [data-testid="stHeader"] {{ display: none; }}
+*/
+
 </style>
 
 <div class="header-box">
