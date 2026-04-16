@@ -4,7 +4,7 @@ from pathlib import Path
 import html
 
 from logic.core import MatchState, Player
-from logic.nineball_surface import create_initial_state
+from logic.nineball_iphone import create_initial_state
 
 # --- 1. Page Config ---
 st.set_page_config(page_title="9-Ball ScoreBoard", page_icon="🎱", layout="centered")
