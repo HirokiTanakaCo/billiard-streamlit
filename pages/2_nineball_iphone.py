@@ -129,14 +129,13 @@ div[data-testid="stVerticalBlock"] > div:has(button[key="main_plus_btn"]) button
     font-size: 18px !important; font-weight: 900 !important; height: 60px !important;
 }}
 
-[data-testid="stHeader"] {{ display: none; }} 
+[data-testid="stHeader"] {{ display: none; }}
+</style>
 
 <div class="header-box">
   <div class="ball-9-icon">9</div>
   <div class="title-text">9-Ball Scoreboard</div>
 </div>
-
-</style>
 """, unsafe_allow_html=True)
 
 # --- 6. WIN 表示 ---
