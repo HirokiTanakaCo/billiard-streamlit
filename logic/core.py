@@ -40,8 +40,8 @@ class MatchState:
         if not self.history:
             return
         snap = self.history.pop()
-        for i, p in enumerate(self.players):
-            p.name, p.wins, p.target = snap["players"][i]
+        # プレイヤーリストをスナップショットの内容で再構築し、人数の不一致による IndexError を防ぐ
+        self.players = [Player(name, wins, target) for name, wins, target in snap["players"]]
         self.turn = snap["turn"]
         self.finished = snap["finished"]
         self.winner = snap["winner"]

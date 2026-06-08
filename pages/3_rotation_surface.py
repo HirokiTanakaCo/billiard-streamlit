@@ -59,7 +59,7 @@ st.markdown("""
 /* Streamlit標準ヘッダーとフッターを隠して全画面感を出す */
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
-header {visibility: hidden;}
+/* header {visibility: hidden;} */
 .block-container {
     padding-top: 2rem;
     padding-bottom: 0rem;
@@ -86,7 +86,7 @@ header {visibility: hidden;}
 html, body { background: var(--bg); }
 
 .main .block-container, .block-container{
-  padding-top: max(8px, env(safe-area-inset-top, 0px)) !important;
+  padding-top: 1.5rem !important;
   padding-bottom: .8rem;
 }
 
@@ -119,7 +119,7 @@ hr.sep{
 }
 
 .section-title{
-  margin:.4rem 0 .3rem !important;
+  margin: 0.1rem 0 0.3rem !important;
 }
 
 /* =========================================================
@@ -287,8 +287,8 @@ hr.sep{
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--gap);
-  /* スコアボードのエリアを画面の55%まで拡大 */
-  min-height: 55vh !important; 
+  /* スコアボードのエリアを圧縮 */
+  min-height: 45vh !important; 
   align-items: stretch;
   /* 操作ボタンを下に押し下げて、誤操作を防ぐ余白を作る */
   margin-bottom: 5px !important; 
@@ -299,7 +299,7 @@ hr.sep{
   background: linear-gradient(180deg,#232736,#171a1f);
   border: 1px solid #2b3142;
   border-radius: 16px;
-  padding: 2rem 1.2rem !important; /* 上下の余白を増やして広く見せる */
+  padding: 1rem 1.2rem !important; /* 余白を圧縮 */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -329,8 +329,8 @@ hr.sep{
 }
 
 .score-val {
-  /* フォントサイズをさらに大きく (最小200px / 最大450px) */
-  font-size: clamp(200px, 35vw, 450px) !important; 
+  /* カード高さに合わせて最大サイズを微調整 */
+  font-size: clamp(150px, 30vw, 400px) !important; 
   /* 行高を極限まで小さくして余白を排除 */
   line-height: 0.75;
   margin: auto 0 !important;
@@ -388,7 +388,7 @@ hr.sep{
 /* =========================================================
    Operation Buttons
    ========================================================= */
-#ops-scope{ margin-top:.25rem; margin-bottom:.25rem; }
+#ops-scope{ margin-top:.25rem; margin-bottom: 0 !important; }
 
 .st-key-btn_turn_surface  div.stButton > button,
 .st-key-btn_foul_surface  div.stButton > button,
@@ -469,7 +469,7 @@ hr.sep{
 /* =========================================================
    Balls
    ========================================================= */
-#balls-scope{ margin-top:.2rem; margin-bottom:.4rem; }
+#balls-scope{ margin-top: 0 !important; margin-bottom:.4rem; }
 
 #ops-scope [data-testid="stElementContainer"],
 #balls-scope [data-testid="stElementContainer"]{
@@ -940,7 +940,7 @@ st.markdown(
     <style>
     /* 1. アプリ最上部の余白（微調整） */
     .stApp {{
-        margin-top: 10px !important;
+        margin-top: 40px !important;
     }}
     
     /* 2. ヘッダー全体のコンテナ */
@@ -950,8 +950,7 @@ st.markdown(
         justify-content: center;
         align-items: center; 
         gap: 12px; /* ボールとテキストの距離をわずかに広げてスッキリと */
-        padding: 20px 0 !important; 
-        margin-top: -10px !important;
+        padding: 15px 0 10px 0 !important; 
         background: transparent;
     }}
 
@@ -991,7 +990,7 @@ st.markdown(
         color: #fff;
         margin: 0 !important;
         font-size: clamp(24px, 2.6vw, 36px);
-        line-height: 1.0;
+        line-height: 1.4;
         display: flex;
         align-items: center;
     }}
@@ -1182,7 +1181,7 @@ st.markdown("<div id='ops-scope'>", unsafe_allow_html=True)
 ctrl = st.columns(6, gap="small")
 
 # イメージを崩さず、1行に収まりやすいラベル名に変更
-labels = ["🔄 交代", "⚠️ ﾌｧｳﾙ", "🚫 ｽｸﾗｯﾁ", "↩ 戻る", "📋 ﾗｯｸ", "🧹 終了"]
+labels = ["🔄 ﾀｰﾝ", "⚠️ ﾌｧｳﾙ", "🚫 ｽｸﾗｯﾁ", "↩ ｱﾝﾄﾞｩ", "📋 ﾗｯｸ", "🧹 ﾘｾｯﾄ"]
 keys   = ["btn_turn_surface", "btn_foul_surface", "btn_scratch_surface",
           "btn_undo_surface", "btn_reset_surface", "btn_match_reset_surface"]
 

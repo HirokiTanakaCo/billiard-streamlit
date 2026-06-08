@@ -155,7 +155,7 @@ hr.sep{border:none; height:1px; background:#2b3142; margin:.25rem 0 !important;}
   margin-top: -1.5rem !important;
 }
 [data-testid="stHorizontalBlock"]:has(.score-card) > [data-testid="stColumn"]{
-  flex:0 0 50% !important; max-width:50% !important; min-width:0 !important;
+  flex:0 0 calc(50% - 0.375rem) !important; max-width:calc(50% - 0.375rem) !important; min-width:0 !important;
 }
 
 /* 行マーカー（score-row-marker）直後の行も横2固定（:has 非対応端末の保険） */
@@ -164,7 +164,7 @@ hr.sep{border:none; height:1px; background:#2b3142; margin:.25rem 0 !important;}
   gap:.75rem !important; justify-content:flex-start !important;
 }
 .score-row-marker + [data-testid="stHorizontalBlock"] > [data-testid="stColumn"]{
-  flex:0 0 50% !important; max-width:50% !important; min-width:0 !important;
+  flex:0 0 calc(50% - 0.375rem) !important; max-width:calc(50% - 0.375rem) !important; min-width:0 !important;
 }
 
 /* ==========================================================

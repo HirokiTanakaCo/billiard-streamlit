@@ -1,31 +1,50 @@
 import streamlit as st
 
-# ページ全体の設定
-st.set_page_config(
-    page_title="Billiard Simulator",
-    page_icon="🎱",
-    layout="centered"
-)
+# 1. デバイス検知 (Streamlit 1.36.0+)
+# ヘッダーから User-Agent を取得し、iPhone かどうかを判定します
+ua = st.context.headers.get("User-Agent", "")
+is_iphone = "iPhone" in ua
 
-# タイトル
-st.title("🎱 Billiard Simulator")
+# 2. 各ページの定義
+# st.Page を使用すると、pages/ ディレクトリの自動生成ルールを上書きできます
+def show_home():
+    st.title("🎱 Billiard Scoreboard Simulator")
+    st.markdown("""
+    このアプリでは、ビリヤードの各種スコアボードのシミュレーションを確認できます。  
+    左のサイドバーから、シミュレーションしたいスコアのゲームを選択してください。
+    """)
+    
+    if is_iphone:
+        st.markdown("※縦画面で利用してください（横画面非対応）。")
+        st.info("📱 iPhoneからアクセスしています。モバイル専用ページを表示します。")
 
-# 説明
-st.markdown("""
-このアプリでは、ビリヤードの各種シミュレーションを確認できます。
+    st.markdown("---")
+    st.caption("Built with Python & Streamlit")
 
-左のサイドバーから、以下のシミュレーションを選択してください。
+home_pg = st.Page(show_home, title="Home", icon="🏠", default=True)
+n_surface = st.Page("pages/1_nineball_surface.py", title="Nineball (Surface)", icon="🎱")
+n_iphone  = st.Page("pages/2_nineball_iphone.py", title="Nineball (iPhone)", icon="📱")
+r_surface = st.Page("pages/3_rotation_surface.py", title="Rotation (Surface)", icon="🎱")
+r_iphone  = st.Page("pages/4_rotation_iphone.py", title="Rotation (iPhone)", icon="📱")
 
-### シミュレーション一覧
-- **Nineball (Surface)**
-- **Nineball (iPhone)**
-- **Rotation (Surface)**
-- **Rotation (iPhone)**
+# 3. ナビゲーションの動的生成
+# iPhone の場合は Surface 用のページをリストから除外します
+if is_iphone:
+    # iPhone の場合は iPhone 版のみ表示
+    nav_dict = {
+        "Main": [home_pg],
+        "iPhone View": [n_iphone, r_iphone]
+    }
+else:
+    # それ以外（Surface等）の場合は Surface 版のみ表示
+    nav_dict = {
+        "Main": [home_pg],
+        "Surface View": [n_surface, r_surface]
+    }
 
-各ページでは、対応するプログラムを実行・可視化できます。
-""")
+# ナビゲーションの実行
+# これによりサイドバーが自動的に設定されます
+pg = st.navigation(nav_dict)
 
-st.markdown("---")
-
-# フッター（任意）
-st.caption("Built with Python & Streamlit")
+# 選択されたページを実行
+pg.run()

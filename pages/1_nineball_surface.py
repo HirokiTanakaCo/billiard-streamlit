@@ -17,8 +17,10 @@ def get_base64_img(file_name):
     try:
         if path.exists():
             return f"data:image/png;base64,{base64.b64encode(path.read_bytes()).decode()}"
-    except:
-        pass
+        else:
+            st.warning(f"画像ファイルが見つかりません: {file_name}")
+    except Exception as e:
+        st.error(f"画像の読み込み中にエラーが発生しました ({file_name}): {e}")
     return ""
 
 IMG_TURN_B64 = get_base64_img("1_turn.png")
@@ -68,7 +70,7 @@ st.markdown(f"""
 /* Streamlit標準ヘッダーとフッターを隠して全画面感を出す */
 #MainMenu {{visibility: hidden;}}
 footer {{visibility: hidden;}}
-header {{visibility: hidden;}}
+/* header {{visibility: hidden;}} */
 .block-container {{
     padding-top: 2rem;
     padding-bottom: 0rem;
@@ -432,7 +434,7 @@ st.markdown(
     <style>
     /* 1. アプリ最上部の余白（微調整） */
     .stApp {{
-        margin-top: 10px !important;
+        margin-top: 20px !important;
     }}
     
     /* 2. ヘッダー全体のコンテナ */
@@ -442,8 +444,7 @@ st.markdown(
         justify-content: center;
         align-items: center; 
         gap: 12px; /* ボールとテキストの距離をわずかに広げてスッキリと */
-        padding: 20px 0 !important; 
-        margin-top: -10px !important;
+        padding: 10px 0 20px 0 !important; 
         background: transparent;
     }}
 
@@ -484,7 +485,7 @@ st.markdown(
         color: #fff;
         margin: 0 !important;
         font-size: clamp(24px, 2.6vw, 36px);
-        line-height: 1.0;
+        line-height: 1.4;
         display: flex;
         align-items: center;
     }}
@@ -505,39 +506,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
-# ---------------------------------------------------------
-# Settings Toggle
-# ---------------------------------------------------------
-with st.expander("⚙ 設定 (人数・名前・ハンデ)", expanded=st.session_state.show_settings):
-    # --- プレイヤー人数（即時反映・on_click） ---
-    spL, c0, c1, spM1, c2, spM2, c3, spR = st.columns([0.2, 4, 1, 1, 1, 1, 1, 10])
-    
-    with c0:
-        st.markdown("#### プレイヤー人数")
-    with c1:
-        st.button("ー", on_click=remove_player, use_container_width=True, key="p_minus_btn")
-    with c2:
-        st.markdown(f'<div style="height:56px; display:flex; align-items:baseline; justify-content:center; gap:6px;"><span style="font-size:32px; font-weight:600;">{len(state.players)}</span><span style="font-size:20px;">人</span></div>', unsafe_allow_html=True)
-    with c3:
-        st.button("＋", on_click=add_player, use_container_width=True, key="p_plus_btn")
-
-    # --- 名前・ハンデ（form） ---
-    with st.form("settings_form", clear_on_submit=False):
-        colL, colR = st.columns(2)
-        for i, p in enumerate(state.players):
-            with colL:
-                st.text_input(f"プレイヤー {i+1}", value=p.name, key=f"name_{i}")
-            with colR:
-                st.number_input("ハンデ", min_value=1, max_value=20, value=p.target, key=f"target_{i}")
-        
-        # 「設定を適用」ボタン
-        if st.form_submit_button("設定を適用", use_container_width=True):
-            for i, p in enumerate(state.players):
-                p.name   = st.session_state[f"name_{i}"]
-                p.target = st.session_state[f"target_{i}"]
-            st.session_state.show_settings = False # 適用後に閉じる
-            st.rerun()
 
 # ---------------------------------------------------------
 # WIN
@@ -591,6 +559,40 @@ for i, col in enumerate(cols):
         )
 
 st.markdown("</div>", unsafe_allow_html=True)
+
+# ---------------------------------------------------------
+# Settings Toggle
+# ---------------------------------------------------------
+with st.expander("⚙ 設定 (人数・名前・ハンデ)", expanded=st.session_state.show_settings):
+    # --- プレイヤー人数（即時反映・on_click） ---
+    spL, c0, c1, spM1, c2, spM2, c3, spR = st.columns([0.2, 4, 1, 1, 1, 1, 1, 10])
+    
+    with c0:
+        st.markdown("#### プレイヤー人数")
+    with c1:
+        st.button("ー", on_click=remove_player, use_container_width=True, key="p_minus_btn")
+    with c2:
+        st.markdown(f'<div style="height:56px; display:flex; align-items:baseline; justify-content:center; gap:6px;"><span style="font-size:32px; font-weight:600;">{len(state.players)}</span><span style="font-size:20px;">人</span></div>', unsafe_allow_html=True)
+    with c3:
+        st.button("＋", on_click=add_player, use_container_width=True, key="p_plus_btn")
+
+    # --- 名前・ハンデ（form） ---
+    with st.form("settings_form", clear_on_submit=False):
+        colL, colR = st.columns(2)
+        for i, p in enumerate(state.players):
+            with colL:
+                st.text_input(f"プレイヤー {i+1}", value=p.name, key=f"name_{i}")
+            with colR:
+                st.number_input("ハンデ", min_value=1, max_value=20, value=p.target, key=f"target_{i}")
+        
+        # 「設定を適用」ボタン
+        if st.form_submit_button("設定を適用", use_container_width=True):
+            for i, p in enumerate(state.players):
+                p.name   = st.session_state[f"name_{i}"]
+                p.target = st.session_state[f"target_{i}"]
+            st.session_state.show_settings = False # 適用後に閉じる
+            st.rerun()
+
 st.markdown("<div class='ops-spacer'></div>", unsafe_allow_html=True)
 
 # ---------------------------------------------------------
@@ -604,4 +606,3 @@ cols_ops[2].button("前ターン",   key="op_prev",  use_container_width=True, o
 cols_ops[3].button("次ターン",   key="op_next",  use_container_width=True, on_click=op_next)
 cols_ops[4].button("アンドゥ", key="op_undo",  use_container_width=True, on_click=undo)
 cols_ops[5].button("リセット",key="op_reset", use_container_width=True, on_click=reset_match)
-
