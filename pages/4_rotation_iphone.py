@@ -705,19 +705,6 @@ if state.finished:
 
 st.markdown("<hr class='sep'/>", unsafe_allow_html=True)
 
-# --- ボール（5×3 固定） ---
-# iPhoneで広告（右下バッジ）に邪魔されないよう、操作ボタンより上に表示順序を変更
-st.markdown("<div class='section-title'>BALL SELECTION</div>", unsafe_allow_html=True)
-for row_start in (1, 6, 11):  # 1-5, 6-10, 11-15
-    cols = st.columns(5)
-    for i, n in enumerate(range(row_start, row_start + 5)):
-        with cols[i]:
-            disabled = state.finished or state.pocketed.get(n, False)
-            if st.button(str(n), key=f"ball_{n}", use_container_width=True, disabled=disabled):
-                pocket_ball(n)
-
-st.markdown("<hr class='sep'/>", unsafe_allow_html=True)
-
 # --- 操作ボタン（横向き=6横 / 縦向き=3+3：行マーカーも併用） ---
 # ボールより下に配置することで、赤いボタンとの干渉を回避
 st.markdown("<div class='controls-row-marker'></div>", unsafe_allow_html=True)

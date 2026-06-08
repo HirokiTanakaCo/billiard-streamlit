@@ -6,7 +6,6 @@ import streamlit as st
 st.set_page_config(
     page_title="Billiard Scoreboard",
     page_icon="🎱",
-    layout="centered",
     initial_sidebar_state="auto"
 )
 
@@ -65,11 +64,11 @@ def show_home():
     st.markdown("---")
     st.caption("Built with Python & Streamlit")
 
-home_pg = st.Page(show_home, title="Home", icon="🏠", default=True)
-n_surface = st.Page("pages/1_nineball_surface.py", title="Nineball (Surface)", icon="🎱")
-n_iphone  = st.Page("pages/2_nineball_iphone.py", title="Nineball (iPhone)", icon="📱")
-r_surface = st.Page("pages/3_rotation_surface.py", title="Rotation (Surface)", icon="🎱")
-r_iphone  = st.Page("pages/4_rotation_iphone.py", title="Rotation (iPhone)", icon="📱")
+home_pg = st.Page(show_home, title="Home", icon="🏠", default=True, layout="centered")
+n_surface = st.Page("pages/1_nineball_surface.py", title="Nineball (Surface)", icon="🎱", layout="wide")
+n_iphone  = st.Page("pages/2_nineball_iphone.py", title="Nineball (iPhone)", icon="📱", layout="centered")
+r_surface = st.Page("pages/3_rotation_surface.py", title="Rotation (Surface)", icon="🎱", layout="wide")
+r_iphone  = st.Page("pages/4_rotation_iphone.py", title="Rotation (iPhone)", icon="📱", layout="centered")
 
 # 3. ナビゲーションの動的生成
 # iPhone の場合は Surface 用のページをリストから除外します
