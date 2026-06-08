@@ -1,5 +1,25 @@
 import streamlit as st
 
+# 0. ページ全体のレイアウト設定
+# layout="centered" を指定することで、コンテンツを中央に寄せます。
+# st.set_page_config は、他のすべての Streamlit コマンドよりも先に呼び出す必要があります。
+st.set_page_config(
+    page_title="Billiard Scoreboard",
+    page_icon="🎱",
+    layout="centered",
+    initial_sidebar_state="auto"
+)
+
+# カスタムCSSで中央寄せをより確実にし、デバイスごとの表示を安定させます
+st.markdown("""
+    <style>
+    .block-container {
+        max-width: 800px;
+        padding-top: 2rem;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 # 1. デバイス検知 (Streamlit 1.36.0+)
 # ヘッダーから User-Agent を取得し、iPhone かどうかを判定します
 ua = st.context.headers.get("User-Agent", "")
