@@ -129,7 +129,11 @@ footer {{ display: none !important; }}
 #MainMenu {{ display: none !important; }}
 .stAppDeployButton {{ display: none !important; }}
 div[class^="viewerBadge"] {{ display: none !important; }}
-[data-testid="stHeader"] {{ background: rgba(0,0,0,0) !important; }}
+/* サイドバーボタンを見えるようにし、アイコンを白くする */
+[data-testid="stHeader"] {{ background: rgba(0,0,0,0) !important; z-index: 999999 !important; }}
+[data-testid="stHeader"] svg {{
+    fill: white !important;
+}}
 
 .header-box {{
     display: flex; justify-content: center; align-items: center;

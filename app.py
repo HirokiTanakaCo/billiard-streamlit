@@ -16,8 +16,11 @@ st.markdown("""
     /* フッターを物理的に消去 */
     footer {display: none !important;}
 
-    /* ヘッダー全体を消すとサイドバーが使えなくなるため、背景を透明にしてボタンだけ残す */
+    /* ヘッダー全体を消すとサイドバーが使えなくなるため、背景を透明にしてボタンは白く強調 */
     [data-testid="stHeader"] {background: rgba(0,0,0,0) !important;}
+    [data-testid="stHeader"] svg {
+        fill: white !important;
+    }
 
     /* 赤い「Deploy」ボタンを消去 */
     .stAppDeployButton {display: none !important;}
