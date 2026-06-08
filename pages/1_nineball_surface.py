@@ -76,6 +76,9 @@ if "nineball_state" not in st.session_state:
         Player("Player 1"),
         Player("Player 2"),
     ])
+# ページ切り替えによるクラス定義の不一致エラーを防止
+elif type(st.session_state.nineball_state).__name__ != "MatchState":
+    st.session_state.nineball_state = MatchState(players=[Player("Player 1"), Player("Player 2")])
 
 if "show_settings" not in st.session_state:
     st.session_state.show_settings = False
