@@ -64,6 +64,9 @@ IMG_NOTURN_B64 = get_base64_img("1_noturn.png")
 # --- 3. Session State（dict → MatchState）---
 if "nineball_state" not in st.session_state:
     st.session_state.nineball_state = MatchState(players=[Player("Player 1"), Player("Player 2")])
+# ページ切り替えによるクラス定義の不一致エラーを防止
+elif type(st.session_state.nineball_state).__name__ != "MatchState":
+    st.session_state.nineball_state = MatchState(players=[Player("Player 1"), Player("Player 2")])
 
 state: MatchState = st.session_state.nineball_state
 
@@ -118,9 +121,13 @@ st.markdown(f"""
 .stApp {{ background-color: #000000 !important; }}
 
 /* iPhoneの画面下部でStreamlitリンクがボタン操作を邪魔しないように設定 */
-.block-container { padding: 50px 15px 12rem 15px !important; max-width: 100% !important; }
-footer { display: none !important; }
-#MainMenu { display: none !important; }
+.block-container {{ 
+    padding: 50px 15px 12rem 15px !important; 
+    max-width: 100% !important; 
+}}
+footer {{ display: none !important; }}
+#MainMenu {{ display: none !important; }}
+.stAppDeployButton {{ display: none !important; }}
 
 .header-box {{
     display: flex; justify-content: center; align-items: center;
@@ -173,50 +180,6 @@ div.stButton > button {{
 div[data-testid="stVerticalBlock"] > div:has(button[key="main_plus_btn"]) button {{
     background-color: #f7c948 !important; color: #111 !important;
     font-size: 18px !important; font-weight: 900 !important; height: 60px !important;
-}}
-
-/*
-[data-testid="stHeader"] {{ display: none; }}
-*/
-/* 全体の背景を黒に固定 */
-.stApp {{ background-color: #000000 !important; }}
-
-/* ヘッダー（サイドバーボタンがある場所）は表示するが、背景を透明にしてコンテンツと被らないようにする */
-[data-testid="stHeader"] {{
-    background-color: rgba(0,0,0,0) !important;
-    color: white !important;
-}}
-
-/* コンテンツの余白調整：ヘッダーを表示した分、少し上を空ける */
-.block-container {{
-    padding-top: 50px !important; 
-    padding-left: 15px !important;
-    padding-right: 15px !important;
-    max-width: 100% !important;
-}}
-
-/* タイトルエリアのスタイル */
-.header-box {{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
-    background-color: #000000;
-}}
-
-.ball-9-icon {{
-    width: 35px; height: 35px; border-radius: 50%;
-    background: radial-gradient(circle at 50% 50%, #fff 0 35%, transparent 38%),
-                linear-gradient(#fff 0 25%, #F7C948 25% 75%, #fff 75%);
-    border: 2px solid white; display: flex; justify-content: center; align-items: center;
-    color: #111; font-weight: 950; font-size: 13px;
-}}
-
-.title-text {{
-    font-weight: 950;
-    color: #ffffff !important; /* 文字色を白に強制 */
-    font-size: 22px;
 }}
 
 </style>

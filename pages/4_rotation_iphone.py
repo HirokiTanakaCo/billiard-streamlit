@@ -41,8 +41,11 @@ STYLES = """
 }
 /* コンテンツがフッター（Streamlit広告）と被らないように十分な余白を確保し、広告自体を消去 */
 .block-container{padding-top:1rem; padding-bottom:12rem !important;}
-footer {display: none !important;}
-#MainMenu {display: none !important;}
+
+/* より強力なセレクタでStreamlitの要素を非表示にする */
+footer { display: none !important; }
+#MainMenu { display: none !important; }
+.stAppDeployButton { display: none !important; }
 
 /* iOS Safari 既定外観オフ（角丸・幅指定を通す） */
 .stButton>button{-webkit-appearance:none}
