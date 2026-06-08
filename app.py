@@ -10,16 +10,6 @@ st.set_page_config(
     initial_sidebar_state="auto"
 )
 
-# カスタムCSSで中央寄せをより確実にし、デバイスごとの表示を安定させます
-st.markdown("""
-    <style>
-    .block-container {
-        max-width: 800px;
-        padding-top: 2rem;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
 # 1. デバイス検知 (Streamlit 1.36.0+)
 # ヘッダーから User-Agent を取得し、iPhone かどうかを判定します
 ua = st.context.headers.get("User-Agent", "")
@@ -28,6 +18,18 @@ is_iphone = "iPhone" in ua
 # 2. 各ページの定義
 # st.Page を使用すると、pages/ ディレクトリの自動生成ルールを上書きできます
 def show_home():
+    # ホーム画面のみに適用するスタイル定義
+    # これにより、Surface版のスコア画面などのwideレイアウトを邪魔しません
+    st.markdown("""
+        <style>
+        .block-container {
+            max-width: 800px;
+            padding-top: 2rem;
+            margin: auto;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
     st.title("🎱 Billiard Scoreboard Simulator")
     st.markdown("""
     このアプリでは、ビリヤードの各種スコアボードのシミュレーションを確認できます。  
