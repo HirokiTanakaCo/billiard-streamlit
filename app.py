@@ -27,6 +27,8 @@ st.markdown("""
     .stDeployButton {display: none !important;}
     /* 右下の「Hosted with Streamlit」バッジを消去 */
     div[class^="viewerBadge"] {display: none !important;}
+    div[data-testid="stStatusWidget"] {display: none !important;}
+    #stConnectionStatus {display: none !important;}
     </style>
 """, unsafe_allow_html=True)
 
