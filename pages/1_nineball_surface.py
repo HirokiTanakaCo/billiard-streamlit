@@ -4,10 +4,52 @@
 # =========================================================
 
 import streamlit as st
+from dataclasses import dataclass, field
+from typing import List
 import html
 
-from logic.core import MatchState, Player
-from logic.nineball_surface import create_initial_state
+# ---------------------------------------------------------
+# Standalone Models & Logic (Integrated from core.py)
+# ---------------------------------------------------------
+@dataclass
+class Player:
+    name: str
+    wins: int = 0
+    target: int = 3
+
+@dataclass
+class MatchState:
+    players: List[Player] = field(default_factory=list)
+    turn: int = 0
+    history: list = field(default_factory=list)
+    winner: str = ""
+    finished: bool = False
+
+    def current_player(self) -> Player:
+        return self.players[self.turn]
+
+    def next_turn(self):
+        self.turn = (self.turn + 1) % len(self.players)
+
+    def prev_turn(self):
+        self.turn = (self.turn - 1) % len(self.players)
+
+    def snapshot(self):
+        self.history.append({
+            "players": [(p.name, p.wins, p.target) for p in self.players],
+            "turn": self.turn,
+            "finished": self.finished,
+            "winner": self.winner,
+        })
+
+    def undo(self):
+        if not self.history:
+            return
+        snap = self.history.pop()
+        self.players = [Player(name, wins, target) for name, wins, target in snap["players"]]
+        self.turn = snap["turn"]
+        self.finished = snap["finished"]
+        self.winner = snap["winner"]
 
 from pathlib import Path
 import base64
@@ -39,7 +81,10 @@ st.set_page_config(
 # Session Init
 # ---------------------------------------------------------
 if "nineball_state" not in st.session_state:
-    st.session_state.nineball_state = create_initial_state()
+    st.session_state.nineball_state = MatchState(players=[
+        Player("Player 1"),
+        Player("Player 2"),
+    ])
 
 if "show_settings" not in st.session_state:
     st.session_state.show_settings = False

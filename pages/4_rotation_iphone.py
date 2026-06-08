@@ -476,8 +476,8 @@ def undo_last():
 
     snap = state.history.pop()["state"]
 
-    for i, p in enumerate(snap["players"]):
-        state.players[i].score = p["score"]
+    # プレイヤーリストをスナップショットから再構築し、人数の不一致による IndexError を防ぐ
+    state.players = [PlayerState(p["name"], p["score"]) for p in snap["players"]]
 
     state.current_player_index = snap["current_player_index"]
     state.pocketed = snap["pocketed"]
