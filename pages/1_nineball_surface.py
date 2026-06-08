@@ -69,15 +69,6 @@ IMG_TURN_B64 = get_base64_img("1_turn.png")
 IMG_NOTURN_B64 = get_base64_img("1_noturn.png")
 
 # ---------------------------------------------------------
-# Page Config
-# ---------------------------------------------------------
-st.set_page_config(
-    page_title="Nine Ball Game - Surface",
-    page_icon="🎱",
-    layout="wide",
-)
-
-# ---------------------------------------------------------
 # Session Init
 # ---------------------------------------------------------
 if "nineball_state" not in st.session_state:

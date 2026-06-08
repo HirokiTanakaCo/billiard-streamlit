@@ -21,15 +21,6 @@ from typing import Any, Dict, List
 import streamlit as st
 
 # =========================
-# 0) ページ設定
-# =========================
-st.set_page_config(
-    page_title="Rotation Scoreboard (Surface Pro 8)",
-    page_icon="🎱",
-    layout="wide",
-)
-
-# =========================
 # 画像 → data:URI
 # =========================
 APP_DIR = Path(__file__).parent.resolve()

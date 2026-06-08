@@ -232,14 +232,16 @@ hr.sep{border:none; height:1px; background:#2b3142; margin:.25rem 0 !important;}
   }
 
   /* ボタン自体の高さを詰める */
-  .ctrl-scope .stButton > button{
-    padding:.5rem .75rem !important;   /* 既定 0.75rem → 0.5rem */
-    line-height:1.0 !important;
+  .ctrl-scope .stButton > button {
+    padding: 0.2rem 0.4rem !important;
+    line-height: 1.1 !important;
+    min-height: 38px !important;
+    font-size: clamp(0.65rem, 2.2vw, 0.85rem) !important;
   }
 
   /* スコア下の区切り線・見出しの余白もさらに圧縮 */
   hr.sep{ margin:.25rem 0 !important; }
-  .section-title{ margin:.3rem 0 .2rem !important; }
+  .section-title{ margin: 0.1rem 0 0.1rem !important; font-size: 14px !important; }
   /* ボタン行直後に来る見出しの上余白を抑制 */
   [data-testid="stHorizontalBlock"]:has(.st-key-btn_turn, .st-key-btn_foul, .st-key-btn_scratch, .st-key-btn_undo, .st-key-btn_reset) + * .section-title,
   .controls-row-marker + [data-testid="stHorizontalBlock"] + * .section-title{
@@ -266,8 +268,9 @@ hr.sep{border:none; height:1px; background:#2b3142; margin:.25rem 0 !important;}
   [data-testid="stHorizontalBlock"]:has(.st-key-ball_1, .st-key-ball_2, .st-key-ball_3, .st-key-ball_4, .st-key-ball_5),
   [data-testid="stHorizontalBlock"]:has(.st-key-ball_6, .st-key-ball_7, .st-key-ball_8, .st-key-ball_9, .st-key-ball_10),
   [data-testid="stHorizontalBlock"]:has(.st-key-ball_11, .st-key-ball_12, .st-key-ball_13, .st-key-ball_14, .st-key-ball_15){
-    padding-left:var(--balls-pad-inline); padding-right:var(--balls-pad-inline);
-    gap:var(--balls-gap) !important; margin-bottom:.1rem !important;
+    padding-left: var(--balls-pad-inline); padding-right: var(--balls-pad-inline);
+    gap: var(--balls-gap) !important;
+    margin-bottom: -0.4rem !important; /* 縦方向の隙間を極限まで詰める */
   }
   [data-testid="stHorizontalBlock"]:has(.st-key-ball_1, .st-key-ball_2, .st-key-ball_3, .st-key-ball_4, .st-key-ball_5) > [data-testid="stColumn"],
   [data-testid="stHorizontalBlock"]:has(.st-key-ball_6, .st-key-ball_7, .st-key-ball_8, .st-key-ball_9, .st-key-ball_10) > [data-testid="stColumn"],
@@ -701,8 +704,22 @@ if state.finished:
 
 st.markdown("<hr class='sep'/>", unsafe_allow_html=True)
 
+# --- ボール（5×3 固定） ---
+# iPhoneで広告（右下バッジ）に邪魔されないよう、操作ボタンより上に表示順序を変更
+st.markdown("<div class='section-title'>BALL SELECTION</div>", unsafe_allow_html=True)
+for row_start in (1, 6, 11):  # 1-5, 6-10, 11-15
+    cols = st.columns(5)
+    for i, n in enumerate(range(row_start, row_start + 5)):
+        with cols[i]:
+            disabled = state.finished or state.pocketed.get(n, False)
+            if st.button(str(n), key=f"ball_{n}", use_container_width=True, disabled=disabled):
+                pocket_ball(n)
+
+st.markdown("<hr class='sep'/>", unsafe_allow_html=True)
+
 # --- 操作ボタン（横向き=6横 / 縦向き=3+3：行マーカーも併用） ---
-st.markdown("<div class='controls-row-marker'></div>", unsafe_allow_html=True)  # ★行マーカー（保険）
+# ボールより下に配置することで、赤いボタンとの干渉を回避
+st.markdown("<div class='controls-row-marker'></div>", unsafe_allow_html=True)
 
 row1 = st.columns(3)
 
@@ -747,16 +764,6 @@ for col, (label, color, key) in zip(row2, actions_row2):
                 reset_rack()
             elif key == "btn_match_reset":
                 reset_match()
-
-# --- ボール（5×3 固定） ---
-st.markdown("<div class='section-title'>BALL SELECTION</div>", unsafe_allow_html=True)
-for row_start in (1, 6, 11):  # 1-5, 6-10, 11-15
-    cols = st.columns(5)
-    for i, n in enumerate(range(row_start, row_start + 5)):
-        with cols[i]:
-            disabled = state.finished or state.pocketed.get(n, False)
-            if st.button(str(n), key=f"ball_{n}", use_container_width=True, disabled=disabled):
-                pocket_ball(n)
 
 # --- ログ & 保存/読み込み ---
 st.markdown("<div class='section-title'>GAME LOG</div>", unsafe_allow_html=True)
