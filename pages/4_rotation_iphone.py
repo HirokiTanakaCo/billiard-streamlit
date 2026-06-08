@@ -42,11 +42,13 @@ STYLES = """
 /* コンテンツがフッター（Streamlit広告）と被らないように十分な余白を確保し、広告自体を消去 */
 .block-container{padding-top:1rem; padding-bottom:12rem !important;}
 
-/* 赤い「Deploy」ボタンやフッターを完全に物理消去して、下のボタンを押せるようにする */
+/* 強力なセレクタでStreamlitの要素を非表示にする */
 footer { display: none !important; }
 header { display: none !important; }
+[data-testid="stHeader"] { display: none !important; }
 #MainMenu { display: none !important; }
 .stAppDeployButton { display: none !important; }
+div[class^="viewerBadge"] { display: none !important; }
 
 /* iOS Safari 既定外観オフ（角丸・幅指定を通す） */
 .stButton>button{-webkit-appearance:none}

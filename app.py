@@ -10,6 +10,21 @@ st.set_page_config(
     initial_sidebar_state="auto"
 )
 
+# 全ページ共通のスタイル（Streamlitのブランディング・赤いボタンを完全に消去）
+st.markdown("""
+    <style>
+    /* フッター、ヘッダー、メニューを物理的に消去 */
+    footer {display: none !important;}
+    header {display: none !important;}
+    [data-testid="stHeader"] {display: none !important;}
+    /* 赤い「Deploy」ボタンを消去 */
+    .stAppDeployButton {display: none !important;}
+    .stDeployButton {display: none !important;}
+    /* 右下の「Hosted with Streamlit」バッジを消去 */
+    div[class^="viewerBadge"] {display: none !important;}
+    </style>
+""", unsafe_allow_html=True)
+
 # 1. デバイス検知 (Streamlit 1.36.0+)
 # ヘッダーから User-Agent を取得し、iPhone かどうかを判定します
 ua = st.context.headers.get("User-Agent", "")

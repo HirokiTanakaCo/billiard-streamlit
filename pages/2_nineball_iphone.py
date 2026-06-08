@@ -124,11 +124,13 @@ st.markdown(f"""
     margin-bottom: 0 !important;
 }}
 
-/* 赤いボタン(Deploy)やヘッダー・フッターを物理的に削除 */
+/* Streamlit要素を徹底的に消去してボタンの誤操作を防ぐ */
 footer {{ display: none !important; }}
 header {{ display: none !important; }}
+[data-testid="stHeader"] {{ display: none !important; }}
 #MainMenu {{ display: none !important; }}
 .stAppDeployButton {{ display: none !important; }}
+div[class^="viewerBadge"] {{ display: none !important; }}
 
 .header-box {{
     display: flex; justify-content: center; align-items: center;
