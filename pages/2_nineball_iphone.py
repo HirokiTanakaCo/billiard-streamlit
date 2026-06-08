@@ -116,7 +116,11 @@ BALL_9_COLOR = "#F7C948"
 st.markdown(f"""
 <style>
 .stApp {{ background-color: #000000 !important; }}
-.block-container {{ padding: 15px 5px 0 5px !important; max-width: 100% !important; }}
+
+/* iPhoneの画面下部でStreamlitリンクがボタン操作を邪魔しないように設定 */
+.block-container { padding: 50px 15px 12rem 15px !important; max-width: 100% !important; }
+footer { display: none !important; }
+#MainMenu { display: none !important; }
 
 .header-box {{
     display: flex; justify-content: center; align-items: center;

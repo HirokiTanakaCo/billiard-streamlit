@@ -39,7 +39,11 @@ STYLES = """
 :root{
   --bg:#0f1117; --panel:#1b1e27; --text:#e8eaed; --accent:#f7c948;
 }
-.block-container{padding-top:1rem; padding-bottom:2rem;}
+/* コンテンツがフッター（Streamlit広告）と被らないように十分な余白を確保し、広告自体を消去 */
+.block-container{padding-top:1rem; padding-bottom:12rem !important;}
+footer {display: none !important;}
+#MainMenu {display: none !important;}
+
 /* iOS Safari 既定外観オフ（角丸・幅指定を通す） */
 .stButton>button{-webkit-appearance:none}
 
