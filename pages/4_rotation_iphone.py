@@ -23,15 +23,6 @@ import streamlit as st
 import html
 
 # =========================
-# 0) ページ設定
-# =========================
-st.set_page_config(
-    page_title="ローテーション スコアボード",
-    page_icon="🎱",
-    layout="wide",
-)
-
-# =========================
 # CSS（※ 必ず <style> タグはエスケープ無し）
 # =========================
 STYLES = """
@@ -358,6 +349,9 @@ if "settings" not in st.session_state:
     st.session_state.settings = Settings()
 if "rotation_state" not in st.session_state:
     st.session_state.rotation_state = MatchState()
+# ページ切り替えによるクラス定義の不一致エラーを防止
+elif type(st.session_state.rotation_state).__name__ != "MatchState":
+    st.session_state.rotation_state = MatchState()
 if "log" not in st.session_state:
     st.session_state.log: List[str] = []
 
@@ -429,7 +423,7 @@ def pocket_ball(value: int):
     add_log(f"{player.name} が {value} 番をポケット（+{value}） → {player.score} 点")
     check_win()
 
-    st.session_state.state = state
+    st.session_state.rotation_state = state
     st.rerun()
 
 def end_turn():
@@ -443,7 +437,7 @@ def end_turn():
 
     add_log("ターン交代")
 
-    st.session_state.state = state
+    st.session_state.rotation_state = state
     st.rerun()
 
 def apply_penalty(kind: str):
@@ -460,7 +454,7 @@ def apply_penalty(kind: str):
     label = "ファウル" if kind == "foul" else "スクラッチ"
     add_log(f"{player.name}：{label}（{penalty}） → {player.score} 点")
 
-    st.session_state.state = state
+    st.session_state.rotation_state = state
     st.rerun()
 
 def reset_rack():
@@ -469,7 +463,7 @@ def reset_rack():
     state.pocketed = {i: False for i in range(1, 16)}
     add_log("ラックをリセット")
 
-    st.session_state.state = state
+    st.session_state.rotation_state = state
     st.rerun()
 
 def reset_match():
@@ -484,7 +478,7 @@ def reset_match():
     st.session_state.log = []
     add_log("=== 試合リセット ===")
 
-    st.session_state.state = state
+    st.session_state.rotation_state = state
     st.rerun()
 
 def undo_last():
@@ -503,7 +497,7 @@ def undo_last():
 
     add_log("アンドゥ：直前の状態に戻しました")
 
-    st.session_state.state = state
+    st.session_state.rotation_state = state
     st.rerun()
 
 # =========================
@@ -545,7 +539,7 @@ def load_from_dict(data: Dict[str, Any]):
         )
     ]
 
-    st.session_state.state = MatchState(
+    st.session_state.rotation_state = MatchState(
         players=players,
         current_player_index=int(
             data.get("state", {}).get("current_player_index", 0)

@@ -6,6 +6,7 @@ import streamlit as st
 st.set_page_config(
     page_title="Billiard Scoreboard",
     page_icon="🎱",
+    layout="wide",
     initial_sidebar_state="auto"
 )
 
@@ -33,7 +34,12 @@ st.markdown("""
 
 # 1. デバイス検知 (Streamlit 1.36.0+)
 # ヘッダーから User-Agent を取得し、iPhone かどうかを判定します
-ua = st.context.headers.get("User-Agent", "")
+try:
+    ua = st.context.headers.get("User-Agent", "")
+except (AttributeError, TypeError):
+    # Streamlit 1.36.0 未満などの場合
+    ua = ""
+
 is_iphone = "iPhone" in ua
 
 # 2. 各ページの定義
@@ -64,11 +70,11 @@ def show_home():
     st.markdown("---")
     st.caption("Built with Python & Streamlit")
 
-home_pg = st.Page(show_home, title="Home", icon="🏠", default=True, layout="centered")
-n_surface = st.Page("pages/1_nineball_surface.py", title="Nineball (Surface)", icon="🎱", layout="wide")
-n_iphone  = st.Page("pages/2_nineball_iphone.py", title="Nineball (iPhone)", icon="📱", layout="centered")
-r_surface = st.Page("pages/3_rotation_surface.py", title="Rotation (Surface)", icon="🎱", layout="wide")
-r_iphone  = st.Page("pages/4_rotation_iphone.py", title="Rotation (iPhone)", icon="📱", layout="centered")
+home_pg = st.Page(show_home, title="Home", icon="🏠", default=True)
+n_surface = st.Page("pages/1_nineball_surface.py", title="Nineball (Surface)", icon="🎱")
+n_iphone  = st.Page("pages/2_nineball_iphone.py", title="Nineball (iPhone)", icon="📱")
+r_surface = st.Page("pages/3_rotation_surface.py", title="Rotation (Surface)", icon="🎱")
+r_iphone  = st.Page("pages/4_rotation_iphone.py", title="Rotation (iPhone)", icon="📱")
 
 # 3. ナビゲーションの動的生成
 # iPhone の場合は Surface 用のページをリストから除外します
