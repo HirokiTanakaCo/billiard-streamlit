@@ -79,6 +79,7 @@ html, body { background: var(--bg); }
 .main .block-container, .block-container{
   padding-top: 1.5rem !important;
   padding-bottom: .8rem;
+  max-width: 100% !important;
 }
 
 /* iOS / Edge button appearance reset */
@@ -794,7 +795,7 @@ def pocket_ball(value: int):
   state.pocketed[value] = True
   add_log(f"{player.name} が {value} 番をポケット（+{value}） → {player.score} 点")
   check_win()
-  st.session_state.state = state
+  st.session_state.rotation_state = state
   st.rerun()
 
 def end_turn():
@@ -803,7 +804,7 @@ def end_turn():
   push_snapshot()
   state.current_player_index = 1 - state.current_player_index
   add_log("ターン交代")
-  st.session_state.state = state
+  st.session_state.rotation_state = state
   st.rerun()
 
 def apply_penalty(kind: str):
@@ -815,14 +816,14 @@ def apply_penalty(kind: str):
   player.score = clamp_score(player.score + penalty)
   label = "ファウル" if kind == "foul" else "スクラッチ"
   add_log(f"{player.name}：{label}（{penalty}） → {player.score} 点")
-  st.session_state.state = state
+  st.session_state.rotation_state = state
   st.rerun()
 
 def reset_rack():
   push_snapshot()
   state.pocketed = {i: False for i in range(1, 16)}
   add_log("ラックをリセット")
-  st.session_state.state = state
+  st.session_state.rotation_state = state
   st.rerun()
 
 def reset_match():
@@ -837,7 +838,7 @@ def reset_match():
   st.session_state.show_win = False
   st.session_state.win_winner = ""
   add_log("=== 試合リセット ===")
-  st.session_state.state = state
+  st.session_state.rotation_state = state
   st.rerun()
 
 def undo_last():
@@ -850,7 +851,7 @@ def undo_last():
   state.pocketed = snap["pocketed"]
   state.finished = snap["finished"]
   add_log("アンドゥ：直前の状態に戻しました")
-  st.session_state.state = state
+  st.session_state.rotation_state = state
   st.rerun()
 
 # =========================
@@ -896,7 +897,7 @@ def load_from_dict(data: Dict[str, Any]):
         for i, p in enumerate(raw_players)
     ]
 
-    st.session_state.state = MatchState(
+    st.session_state.rotation_state = MatchState(
         players=players,
         current_player_index=int(data.get("state", {}).get("current_player_index", 0)),
         pocketed={
@@ -911,7 +912,7 @@ def load_from_dict(data: Dict[str, Any]):
     )
 
     settings = st.session_state.settings
-    state = st.session_state.state
+    state = st.session_state.rotation_state
     add_log("JSON から試合を読み込み")
 
 def clean_name(s: str) -> str:

@@ -113,6 +113,7 @@ footer {{visibility: hidden;}}
 .block-container {{
     padding-top: 2rem;
     padding-bottom: 0rem;
+    max-width: 100% !important;
 }}
 
 /* ===============================
