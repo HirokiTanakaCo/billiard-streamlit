@@ -48,9 +48,6 @@ class MatchState:
         self.finished = snap["finished"]
         self.winner = snap["winner"]
 
-# --- 1. Page Config ---
-st.set_page_config(page_title="9-Ball ScoreBoard", page_icon="🎱", layout="centered")
-
 # --- 2. Base64 Image Loader ---
 def get_base64_img(file_name):
     path = Path(__file__).parent / "image" / file_name
@@ -124,8 +121,12 @@ st.markdown(f"""
 .block-container {{ 
     padding: 50px 15px 12rem 15px !important; 
     max-width: 100% !important; 
+    margin-bottom: 0 !important;
 }}
+
+/* 赤いボタン(Deploy)やヘッダー・フッターを物理的に削除 */
 footer {{ display: none !important; }}
+header {{ display: none !important; }}
 #MainMenu {{ display: none !important; }}
 .stAppDeployButton {{ display: none !important; }}
 
