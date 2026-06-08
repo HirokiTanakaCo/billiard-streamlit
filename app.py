@@ -13,10 +13,12 @@ st.set_page_config(
 # 全ページ共通のスタイル（Streamlitのブランディング・赤いボタンを完全に消去）
 st.markdown("""
     <style>
-    /* フッター、ヘッダー、メニューを物理的に消去 */
+    /* フッターを物理的に消去 */
     footer {display: none !important;}
-    header {display: none !important;}
-    [data-testid="stHeader"] {display: none !important;}
+
+    /* ヘッダー全体を消すとサイドバーが使えなくなるため、背景を透明にしてボタンだけ残す */
+    [data-testid="stHeader"] {background: rgba(0,0,0,0) !important;}
+
     /* 赤い「Deploy」ボタンを消去 */
     .stAppDeployButton {display: none !important;}
     .stDeployButton {display: none !important;}

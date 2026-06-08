@@ -124,13 +124,12 @@ st.markdown(f"""
     margin-bottom: 0 !important;
 }}
 
-/* Streamlit要素を徹底的に消去してボタンの誤操作を防ぐ */
+/* ブランディング要素を消去しつつ、サイドバーボタンは維持 */
 footer {{ display: none !important; }}
-header {{ display: none !important; }}
-[data-testid="stHeader"] {{ display: none !important; }}
 #MainMenu {{ display: none !important; }}
 .stAppDeployButton {{ display: none !important; }}
 div[class^="viewerBadge"] {{ display: none !important; }}
+[data-testid="stHeader"] {{ background: rgba(0,0,0,0) !important; }}
 
 .header-box {{
     display: flex; justify-content: center; align-items: center;
