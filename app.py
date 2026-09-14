@@ -77,7 +77,10 @@ def show_home():
     import io
     from PIL import Image
 
-    current_url = st.context.headers.get("Referer", "")
+    current_url = st.context.headers.get(
+        "Referer",
+        "https://billiard-app-4adsmkarnn6asosaj9cusv.streamlit.app/"
+    )
 
     if current_url:
         st.subheader("📱 この画面を共有する（QRコード）")
@@ -92,7 +95,7 @@ def show_home():
         st.image(buf.getvalue(), caption="このQRコードを読み取ると同じ画面を開けます")
     else:
         st.warning("URLを取得できませんでした。ローカル環境ではQRコードが生成できない場合があります。")
-        
+
 home_pg = st.Page(show_home, title="Home", icon="🏠", default=True)
 n_surface = st.Page("pages/1_nineball_surface.py", title="Nineball (Surface)", icon="🎱")
 n_iphone  = st.Page("pages/2_nineball_iphone.py", title="Nineball (iPhone)", icon="📱")
