@@ -1,12 +1,15 @@
 import streamlit as st
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import List
 import base64
 from pathlib import Path
 import html
 
+from supabase import create_client
+import json
+
 # ---------------------------------------------------------
-# Standalone Models & Logic (Integrated from core.py)
+# Models（Playerだけ残す：UI側の構造用）
 # ---------------------------------------------------------
 @dataclass
 class Player:
@@ -14,41 +17,7 @@ class Player:
     wins: int = 0
     target: int = 3
 
-@dataclass
-class MatchState:
-    players: List[Player] = field(default_factory=list)
-    turn: int = 0
-    history: list = field(default_factory=list)
-    winner: str = ""
-    finished: bool = False
-
-    def current_player(self) -> Player:
-        return self.players[self.turn]
-
-    def next_turn(self):
-        self.turn = (self.turn + 1) % len(self.players)
-
-    def prev_turn(self):
-        self.turn = (self.turn - 1) % len(self.players)
-
-    def snapshot(self):
-        self.history.append({
-            "players": [(p.name, p.wins, p.target) for p in self.players],
-            "turn": self.turn,
-            "finished": self.finished,
-            "winner": self.winner,
-        })
-
-    def undo(self):
-        if not self.history:
-            return
-        snap = self.history.pop()
-        self.players = [Player(name, wins, target) for name, wins, target in snap["players"]]
-        self.turn = snap["turn"]
-        self.finished = snap["finished"]
-        self.winner = snap["winner"]
-
-# --- 2. Base64 Image Loader ---
+# --- Base64 Image Loader ---
 def get_base64_img(file_name):
     path = Path(__file__).parent / "image" / file_name
     if path.exists():
@@ -58,59 +27,108 @@ def get_base64_img(file_name):
 IMG_TURN_B64 = get_base64_img("1_turn.png")
 IMG_NOTURN_B64 = get_base64_img("1_noturn.png")
 
-# --- 3. Session State（dict → MatchState）---
-if "nineball_state" not in st.session_state:
-    st.session_state.nineball_state = MatchState(players=[Player("Player 1"), Player("Player 2")])
-# ページ切り替えによるクラス定義の不一致エラーを防止
-elif type(st.session_state.nineball_state).__name__ != "MatchState":
-    st.session_state.nineball_state = MatchState(players=[Player("Player 1"), Player("Player 2")])
+# ---------------------------------------------------------
+# Supabase 接続 & 状態管理（MatchState の代わり）
+# ---------------------------------------------------------
+url = st.secrets["SUPABASE_URL"]
+key = st.secrets["SUPABASE_KEY"]
+supabase = create_client(url, key)
 
-state: MatchState = st.session_state.nineball_state
+# ルームID取得（app.py で ?room=XXX を付けている前提）
+room_id = st.query_params.get("room", None)
+if room_id is None:
+    room_id = "default_room"
+
+def load_state(room_id: str):
+    res = supabase.table("billiard_rooms").select("*").eq("room_id", room_id).execute()
+    if not res.data:
+        init_state = {
+            "room_id": room_id,
+            "game": "nineball",
+            "players": [
+                {"name": "Player 1", "wins": 0, "target": 3},
+                {"name": "Player 2", "wins": 0, "target": 3},
+            ],
+            "turn": 0,
+            "finished": False,
+            "winner": "",
+            "history": {},  # UNDO簡易版（1手だけ）
+        }
+        supabase.table("billiard_rooms").insert(init_state).execute()
+        return init_state
+    return res.data[0]
+
+def save_state(room_id: str, state: dict):
+    supabase.table("billiard_rooms").update(state).eq("room_id", room_id).execute()
+
+state = load_state(room_id)
 
 if "show_win" not in st.session_state:
     st.session_state.show_win = False
 
-# --- 4. Logic Functions（core API に移行）---
+# ---------------------------------------------------------
+# Logic Functions（Supabase版：UNDOは1手だけ）
+# ---------------------------------------------------------
 def snapshot():
-    state.snapshot()
+    state["history"] = {
+        "players": [dict(p) for p in state["players"]],
+        "turn": state["turn"],
+        "finished": state["finished"],
+        "winner": state["winner"],
+    }
 
 def add_score():
-    if state.finished:
+    if state["finished"]:
         return
     snapshot()
-    p = state.current_player()
-    p.wins += 1
-    if p.wins >= p.target:
-        state.finished = True
-        state.winner = p.name
+    p = state["players"][state["turn"]]
+    p["wins"] += 1
+    if p["wins"] >= p["target"]:
+        state["finished"] = True
+        state["winner"] = p["name"]
         st.session_state.show_win = True
+    save_state(room_id, state)
 
 def minus_score():
-    if state.finished:
+    if state["finished"]:
         return
     snapshot()
-    p = state.current_player()
-    p.wins = max(0, p.wins - 1)
+    p = state["players"][state["turn"]]
+    p["wins"] = max(0, p["wins"] - 1)
+    save_state(room_id, state)
 
 def change_turn():
     snapshot()
-    state.next_turn()
+    num_players = len(state["players"])
+    state["turn"] = (state["turn"] + 1) % num_players
+    save_state(room_id, state)
 
 def undo():
-    state.undo()
-    st.session_state.show_win = state.finished
+    if not state.get("history"):
+        return
+    hist = state["history"]
+    state["players"] = [dict(p) for p in hist["players"]]
+    state["turn"] = hist["turn"]
+    state["finished"] = hist["finished"]
+    state["winner"] = hist["winner"]
+    state["history"] = {}
+    st.session_state.show_win = state["finished"]
+    save_state(room_id, state)
 
 def reset_match():
     snapshot()
-    for p in state.players:
-        p.wins = 0
-    state.turn = 0
-    state.finished = False
-    state.winner = ""
-    state.history.clear()
+    for p in state["players"]:
+        p["wins"] = 0
+    state["turn"] = 0
+    state["finished"] = False
+    state["winner"] = ""
+    state["history"] = {}
     st.session_state.show_win = False
+    save_state(room_id, state)
 
-# --- 5. CSS（元 iPhone 版そのまま）---
+# ---------------------------------------------------------
+# CSS & ヘッダー（元 iPhone 版そのまま）
+# ---------------------------------------------------------
 BALL_9_COLOR = "#F7C948"
 
 st.markdown(f"""
@@ -195,18 +213,17 @@ div[data-testid="stVerticalBlock"] > div:has(button[key="main_plus_btn"]) button
   <div class="title-text">9-Ball Scoreboard</div>
 </div>
 """, unsafe_allow_html=True)
-
-# --- 6. WIN 表示 ---
-if state.finished and st.session_state.show_win:
+# --- WIN 表示 ---
+if state["finished"] and st.session_state.show_win:
     st.markdown(f"""
         <div class="win-banner">
             <p class="win-title">🏆 WIN</p>
-            <p class="win-player">{html.escape(state.winner)}</p>
+            <p class="win-player">{html.escape(state["winner"])}</p>
         </div>
     """, unsafe_allow_html=True)
 
-# --- 7. スコアボード表示（元と同じ構造）---
-num_p = len(state.players)
+# --- スコアボード表示（元と同じ構造、stateをdict参照に変更）---
+num_p = len(state["players"])
 if num_p <= 2:
     row_height, score_size, name_size, icon_h = "180px", "100px", "24px", "32px"
 elif num_p == 3:
@@ -214,27 +231,26 @@ elif num_p == 3:
 else:
     row_height, score_size, name_size, icon_h = "95px", "50px", "16px", "18px"
 
-for i, p in enumerate(state.players):
-    is_turn = (i == state.turn)
-    is_winner = (p.name == state.winner)
+for i, p in enumerate(state["players"]):
+    is_turn = (i == state["turn"])
+    is_winner = (p["name"] == state["winner"])
     card_cls = "win-card" if is_winner else ("active-card" if is_turn else "")
     icon_b64 = IMG_TURN_B64 if is_turn else IMG_NOTURN_B64
 
     st.markdown(f"""
       <div class="player-row {card_cls}" style="height:{row_height}; margin-bottom:10px;">
         <div class="player-info">
-          <div class="player-name" style="font-size:{name_size};">{p.name}</div>
-          <div style="color:#aaa; font-size:12px;">GOAL: {p.target}</div>
+          <div class="player-name" style="font-size:{name_size};">{p["name"]}</div>
+          <div style="color:#aaa; font-size:12px;">GOAL: {p["target"]}</div>
           <img src="{icon_b64}" style="height:{icon_h}; margin-top:10px;">
         </div>
-        <div class="score-display" style="font-size:{score_size};">{p.wins}</div>
+        <div class="score-display" style="font-size:{score_size};">{p["wins"]}</div>
       </div>
     """, unsafe_allow_html=True)
+# --- 操作ボタン群（元 iPhone UX 完全維持、stateをdict参照に変更）---
+current_p = state["players"][state["turn"]]
 
-# --- 8. 操作ボタン群（元 iPhone UX 完全維持）---
-current_p = state.current_player()
-
-if st.button(f"【 {current_p.name} 】に +1 点", key="main_plus_btn", use_container_width=True):
+if st.button(f"【 {current_p['name']} 】に +1 点", key="main_plus_btn", use_container_width=True):
     add_score()
     st.rerun()
 
@@ -258,26 +274,31 @@ with c4:
         reset_match()
         st.rerun()
 
-# --- 9. Settings（元コードそのまま）---
+# --- Settings（元コードそのまま＋Supabase反映）---
 st.markdown("---")
 with st.expander("⚙ プレイヤー設定"):
     c1, c2 = st.columns(2)
     with c1:
         if st.button("＋ プレイヤー追加", use_container_width=True):
             snapshot()
-            state.players.append(Player(f"Player {len(state.players)+1}"))
+            state["players"].append({"name": f"Player {len(state['players'])+1}", "wins": 0, "target": 3})
+            save_state(room_id, state)
             st.rerun()
     with c2:
-        if st.button("ー プレイヤー削除", use_container_width=True) and len(state.players) > 1:
+        if st.button("ー プレイヤー削除", use_container_width=True) and len(state["players"]) > 1:
             snapshot()
-            state.players.pop()
-            state.turn = min(state.turn, len(state.players)-1)
+            state["players"].pop()
+            state["turn"] = min(state["turn"], len(state["players"]) - 1)
+            save_state(room_id, state)
             st.rerun()
 
     with st.form("settings_form"):
-        for i, p in enumerate(state.players):
+        for i, p in enumerate(state["players"]):
             st.markdown(f"**Player {i+1} 設定**")
-            p.name = st.text_input("名前", p.name, key=f"name_{i}")
-            p.target = st.number_input("目標得点", 1, 99, p.target, key=f"target_{i}")
+            name = st.text_input("名前", p["name"], key=f"name_{i}")
+            target = st.number_input("目標得点", 1, 99, p["target"], key=f"target_{i}")
+            p["name"] = name
+            p["target"] = target
         if st.form_submit_button("設定を保存して反映", use_container_width=True):
+            save_state(room_id, state)
             st.rerun()
