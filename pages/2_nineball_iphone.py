@@ -62,6 +62,7 @@ def save_state(room_id: str, state: dict):
     supabase.table("billiard_rooms").update(state).eq("room_id", room_id).execute()
 
 state = load_state(room_id)
+st.write("Room ID:", room_id)
 
 if "show_win" not in st.session_state:
     st.session_state.show_win = False
