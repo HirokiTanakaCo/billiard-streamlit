@@ -70,6 +70,29 @@ def show_home():
     st.markdown("---")
     st.caption("Built with Python & Streamlit")
 
+    # ーーーーーーーーーーーーーーーーーーーーーー
+    # 📌 ここに QR コード生成コードを追加する
+    # ーーーーーーーーーーーーーーーーーーーーーー
+    import qrcode
+    import io
+    from PIL import Image
+
+    current_url = st.context.headers.get("Referer", "")
+
+    if current_url:
+        st.subheader("📱 この画面を共有する（QRコード）")
+
+        qr = qrcode.QRCode(box_size=8, border=2)
+        qr.add_data(current_url)
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white")
+
+        buf = io.BytesIO()
+        img.save(buf, format="PNG")
+        st.image(buf.getvalue(), caption="このQRコードを読み取ると同じ画面を開けます")
+    else:
+        st.warning("URLを取得できませんでした。ローカル環境ではQRコードが生成できない場合があります。")
+        
 home_pg = st.Page(show_home, title="Home", icon="🏠", default=True)
 n_surface = st.Page("pages/1_nineball_surface.py", title="Nineball (Surface)", icon="🎱")
 n_iphone  = st.Page("pages/2_nineball_iphone.py", title="Nineball (iPhone)", icon="📱")
