@@ -33,6 +33,9 @@ IMG_NOTURN_B64 = get_base64_img("1_noturn.png")
 url = st.secrets["SUPABASE_URL"]
 key = st.secrets["SUPABASE_KEY"]
 supabase = create_client(url, key)
+from streamlit_autorefresh import st_autorefresh
+st_autorefresh(interval=500)  
+
 
 # ルームID取得（app.py で ?room=XXX を付けている前提）
 room_id = st.query_params.get("room", None)
